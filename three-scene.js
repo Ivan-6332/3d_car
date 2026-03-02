@@ -312,6 +312,10 @@ function buildDestinationPin(target) {
   g.position.set(target.x, 0, target.z);
   g.scale.setScalar(0); // popped in via GSAP back.out
 
+  // Sub-group for the upright pin parts — shrunk independently on arrival
+  const pinStick = new THREE.Group();
+  g.add(pinStick);
+
   // Pin head
   const headMat = new THREE.MeshStandardMaterial({
     color: 0xff1f1f, emissive: 0xff0000, emissiveIntensity: 0.7,
@@ -319,7 +323,7 @@ function buildDestinationPin(target) {
   });
   const head = new THREE.Mesh(new THREE.SphereGeometry(0.22, 24, 24), headMat);
   head.position.y = 0.75;
-  g.add(head);
+  pinStick.add(head);
 
   // Inner white dot (Google Maps signature)
   const dot = new THREE.Mesh(
@@ -327,7 +331,7 @@ function buildDestinationPin(target) {
     new THREE.MeshBasicMaterial({ color: 0xffffff })
   );
   dot.position.y = 0.75;
-  g.add(dot);
+  pinStick.add(dot);
 
   // Stem — inverted cone, point faces down
   const stem = new THREE.Mesh(
@@ -336,7 +340,7 @@ function buildDestinationPin(target) {
   );
   stem.position.y = 0.27;
   stem.rotation.z = Math.PI;
-  g.add(stem);
+  pinStick.add(stem);
 
   // Inner ground pulse ring
   const ringMat = new THREE.MeshBasicMaterial({
@@ -356,7 +360,7 @@ function buildDestinationPin(target) {
   glow.position.y = 0.012;
   g.add(glow);
 
-  return { group: g, ring, ringMat, glow, glowMat };
+  return { group: g, pinStick, ring, ringMat, glow, glowMat };
 }
 
 // ── Engine start micro-shudder ─────────────────────────────────────
@@ -428,7 +432,7 @@ function driveToLocation(key) {
   const road   = buildRoadRibbon(curve, roadWidth);
   const dashes = buildCenterDashes(curve);
   const { line: traceLine, geo: traceGeo, ptCount } = buildTraceLine(curve);
-  const { group: pinGroup, ring, ringMat, glow, glowMat } = buildDestinationPin(target);
+  const { group: pinGroup, pinStick, ring, ringMat, glow, glowMat } = buildDestinationPin(target);
 
   [road, dashes, traceLine, pinGroup].forEach(o => { scene.add(o); journeyObjects.push(o); });
 
@@ -499,6 +503,8 @@ function driveToLocation(key) {
       // Straighten car on arrival
       gsap.to(carModel.rotation, { x: 0, y: 0, duration: 0.7, ease: 'power2.inOut' });
 
+      // Fade out only the upright pin stick — rings keep pulsing
+      gsap.to(pinStick.scale, { x: 0, y: 0, z: 0, duration: 0.5, ease: 'back.in(1.8)', delay: 0.3 });
       // Camera pulls back and focuses on the pin
       gsap.to(camera.position, {
         x: target.x - 1.5, z: target.z + 4.8, y: 1.7,
