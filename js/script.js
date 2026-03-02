@@ -75,6 +75,32 @@ const DESTINATIONS = {
   },
 };
 
+/* ── Theme toggle ──────────────────────────────────────────── */
+(function () {
+  const root        = document.documentElement;
+  const STORAGE_KEY = 'navdrive-theme';
+
+  // Apply saved preference immediately (before paint)
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved === 'light') root.setAttribute('data-theme', 'light');
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('themeToggle');
+    if (!btn) return;
+
+    btn.addEventListener('click', () => {
+      const isLight = root.getAttribute('data-theme') === 'light';
+      if (isLight) {
+        root.removeAttribute('data-theme');
+        localStorage.setItem(STORAGE_KEY, 'dark');
+      } else {
+        root.setAttribute('data-theme', 'light');
+        localStorage.setItem(STORAGE_KEY, 'light');
+      }
+    });
+  });
+}());
+
 /* ── DOM references ────────────────────────────────────────── */
 const appShell          = document.querySelector('.app-shell');
 const scene             = document.getElementById('scene');

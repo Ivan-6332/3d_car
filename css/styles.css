@@ -60,6 +60,38 @@
   --ease-in-out:   cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* ── Light theme token overrides ───────────────────────────── */
+[data-theme="light"] {
+  --clr-bg:            #eef2f7;
+  --clr-bg-2:          #e4eaf3;
+  --clr-surface:       rgba(255, 255, 255, 0.65);
+  --clr-surface-hover: rgba(255, 255, 255, 0.85);
+  --clr-border:        rgba(0, 0, 0, 0.08);
+  --clr-border-light:  rgba(0, 0, 0, 0.13);
+
+  --clr-cyan:          #0369a1;
+  --clr-cyan-dim:      rgba(3, 105, 161, 0.10);
+  --clr-cyan-glow:     rgba(3, 105, 161, 0.22);
+  --clr-purple:        #6d28d9;
+  --clr-purple-dim:    rgba(109, 40, 217, 0.10);
+  --clr-gold:          #b45309;
+  --clr-gold-dim:      rgba(180, 83, 9, 0.12);
+  --clr-green:         #047857;
+
+  --clr-text-primary:   #0d1b2a;
+  --clr-text-secondary: rgba(13, 27, 42, 0.58);
+  --clr-text-muted:     rgba(13, 27, 42, 0.35);
+  --clr-eyebrow:        var(--clr-cyan);
+
+  --btn-grad:       linear-gradient(135deg, #0369a1 0%, #4f46e5 100%);
+  --btn-grad-hover: linear-gradient(135deg, #0284c7 0%, #6366f1 100%);
+
+  --glass-bg:     rgba(255, 255, 255, 0.58);
+  --glass-blur:   blur(28px) saturate(170%);
+  --glass-border: 1px solid rgba(255, 255, 255, 0.82);
+  --glass-shadow: 0 8px 40px rgba(0, 0, 0, 0.09), 0 1px 0 rgba(255,255,255,0.95) inset;
+}
+
 /* ── Reset + Base ───────────────────────────────────────────── */
 *, *::before, *::after {
   box-sizing: border-box;
@@ -79,6 +111,7 @@ body {
   color: var(--clr-text-primary);
   background: var(--clr-bg);
   -webkit-font-smoothing: antialiased;
+  transition: background 0.45s ease, color 0.45s ease;
 }
 
 /* ── App shell ──────────────────────────────────────────────── */
@@ -110,6 +143,19 @@ body {
     radial-gradient(ellipse 60% 50% at 50% 100%, #060b18 0%, transparent 70%),
     var(--clr-bg);
   z-index: 0;
+  transition: background 0.45s ease;
+}
+[data-theme="light"] .bg-base {
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%,   rgba(186,224,255,0.55) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 50% at 50% 100%, rgba(196,181,253,0.22) 0%, transparent 70%),
+    var(--clr-bg);
+}
+[data-theme="light"] .bg-glow--left {
+  background: radial-gradient(circle, rgba(3,105,161,0.14) 0%, transparent 70%);
+}
+[data-theme="light"] .bg-glow--right {
+  background: radial-gradient(circle, rgba(109,40,217,0.09) 0%, transparent 70%);
 }
 
 .bg-glow {
@@ -144,6 +190,12 @@ body {
   background-size: 60px 60px;
   z-index: 0;
   mask-image: radial-gradient(ellipse 90% 80% at 50% 50%, black 30%, transparent 100%);
+  transition: background-image 0.45s ease;
+}
+[data-theme="light"] .bg-grid {
+  background-image:
+    linear-gradient(rgba(0,0,0,0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,0.045) 1px, transparent 1px);
 }
 
 /* ── Top navigation bar ─────────────────────────────────────── */
@@ -159,6 +211,11 @@ body {
   background: rgba(4, 8, 15, 0.7);
   backdrop-filter: blur(20px);
   flex-shrink: 0;
+  transition: background 0.45s ease, border-color 0.45s ease;
+}
+[data-theme="light"] .topbar {
+  background: rgba(238, 242, 247, 0.82);
+  border-bottom-color: rgba(0, 0, 0, 0.07);
 }
 
 .topbar__logo {
@@ -290,12 +347,20 @@ body {
     radial-gradient(ellipse 70% 80% at 50% 50%, rgba(56,189,248,0.04) 0%, transparent 70%),
     rgba(255,255,255,0.02);
   border: 1px dashed rgba(56,189,248,0.18);
+  transition: background 0.45s ease, border-color 0.45s ease;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   overflow: hidden;
   transition: transform 0.5s var(--ease-out-expo), box-shadow 0.5s var(--ease-out-expo);
+}
+
+[data-theme="light"] .map-placeholder {
+  background:
+    radial-gradient(ellipse 70% 80% at 50% 50%, rgba(56,189,248,0.08) 0%, transparent 70%),
+    #07101e;
+  border-color: rgba(56,189,248,0.22);
 }
 
 /* Journey-started: map pulses/scales */
@@ -326,6 +391,9 @@ body {
   letter-spacing: 0.18em;
   color: rgba(255,255,255,0.25);
 }
+/* map-title and map-sub keep dark-mode white since map bg is always dark */
+[data-theme="light"] .map-title { color: rgba(255,255,255,0.25); }
+[data-theme="light"] .map-sub   { color: rgba(232,234,240,0.30); }
 .map-sub {
   display: block;
   font-size: 0.68rem;
@@ -400,6 +468,7 @@ body {
   background:
     linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
   border: 1px dashed rgba(255,255,255,0.12);
+  transition: background 0.45s ease, border-color 0.45s ease;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -408,6 +477,10 @@ body {
 }
 .scene.journey-started .car-placeholder {
   border-color: rgba(56, 189, 248, 0.22);
+}
+[data-theme="light"] .car-placeholder {
+  background: linear-gradient(135deg, #dde4ed 0%, #cdd6e2 100%);
+  border-color: rgba(0,0,0,0.08);
 }
 
 /* Three.js canvas host — fills the placeholder shell completely */
@@ -503,6 +576,10 @@ body {
   background: #0d1829;
   color: var(--clr-text-primary);
 }
+[data-theme="light"] .custom-select option {
+  background: #dde6f0;
+  color: #0d1b2a;
+}
 .custom-select:hover {
   border-color: rgba(56, 189, 248, 0.35);
   background: rgba(255, 255, 255, 0.07);
@@ -594,6 +671,7 @@ body {
     opacity        0.25s;
   box-shadow: 0 4px 24px rgba(56, 189, 248, 0.28);
 }
+[data-theme="light"] .start-btn { color: #ffffff; }
 .start-btn::before {
   content: '';
   position: absolute;
@@ -657,6 +735,42 @@ body {
 }
 
 /* ── Details panel ──────────────────────────────────────────── */
+[data-theme="light"] .details-panel {
+  background: rgba(232, 240, 250, 0.95);
+  border-top-color: rgba(0,0,0,0.07);
+  box-shadow: 0 -20px 80px rgba(0,0,0,0.10), 0 -1px 0 rgba(255,255,255,0.95) inset;
+}
+[data-theme="light"] .details-panel__handle {
+  background: rgba(0,0,0,0.14);
+}
+[data-theme="light"] .panel-close-btn {
+  background: rgba(0,0,0,0.05);
+  border-color: rgba(0,0,0,0.12);
+}
+[data-theme="light"] .panel-close-btn:hover {
+  background: rgba(0,0,0,0.10);
+  color: var(--clr-text-primary);
+  border-color: rgba(0,0,0,0.20);
+}
+[data-theme="light"] .location-img-placeholder {
+  background:
+    radial-gradient(ellipse at 30% 30%, rgba(3,105,161,0.08) 0%, transparent 60%),
+    rgba(255,255,255,0.50);
+  border-color: rgba(0,0,0,0.10);
+}
+[data-theme="light"] .details-panel__footer {
+  border-top-color: rgba(0,0,0,0.08);
+}
+[data-theme="light"] .explore-btn {
+  background: rgba(0,0,0,0.04);
+  border-color: rgba(0,0,0,0.12);
+}
+[data-theme="light"] .explore-btn:hover { color: #ffffff; }
+[data-theme="light"] .route-stats {
+  background: rgba(0,0,0,0.03);
+  border-color: rgba(0,0,0,0.07);
+}
+[data-theme="light"] .stat-divider { background: rgba(0,0,0,0.08); }
 .details-panel {
   position: fixed;
   bottom: 0;
@@ -912,6 +1026,42 @@ body {
   border-radius: 100px;
 }
 ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.22); }
+[data-theme="light"] ::-webkit-scrollbar-thumb       { background: rgba(0,0,0,0.16); }
+[data-theme="light"] ::-webkit-scrollbar-thumb:hover  { background: rgba(0,0,0,0.28); }
+
+/* ── Theme toggle button ─────────────────────────────────────── */
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--clr-border-light);
+  background: var(--clr-surface);
+  color: var(--clr-text-secondary);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition:
+    background    0.3s ease,
+    border-color  0.3s ease,
+    color         0.3s ease,
+    transform     0.2s ease,
+    box-shadow    0.3s ease;
+}
+.theme-toggle:hover {
+  background: var(--clr-surface-hover);
+  color: var(--clr-text-primary);
+  border-color: var(--clr-cyan);
+  box-shadow: 0 0 12px var(--clr-cyan-glow);
+  transform: rotate(18deg) scale(1.08);
+}
+/* In dark mode show sun, hide moon */
+.theme-toggle .icon-moon { display: none; }
+.theme-toggle .icon-sun  { display: block; }
+/* In light mode show moon, hide sun */
+[data-theme="light"] .theme-toggle .icon-sun  { display: none; }
+[data-theme="light"] .theme-toggle .icon-moon { display: block; }
 
 /* ── Focus visible ring ─────────────────────────────────────── */
 :focus-visible {
@@ -980,7 +1130,11 @@ body {
   height: 100vh;
   border-radius: 0;
   border: none;
-  background: none;
+  background: #04080f;   /* always dark — Three.js road/scene matches dark mode */
+}
+/* Light theme: keep driving background dark so the road scene looks identical */
+[data-theme="light"] .app-shell.driving-mode .car-placeholder {
+  background: #04080f;
 }
 
 /* Base transitions for all UI panels (smooth exit + re-entry) */
@@ -1068,6 +1222,16 @@ body {
   transition: background 0.25s, color 0.25s, border-color 0.25s, transform 0.2s;
   pointer-events: auto;
 }
+[data-theme="light"] .exit-drive-btn {
+  background: rgba(238,242,247,0.88);
+  border-color: rgba(0,0,0,0.12);
+  color: rgba(13,27,42,0.70);
+}
+[data-theme="light"] .exit-drive-btn:hover {
+  background: rgba(255,255,255,0.95);
+  color: var(--clr-text-primary);
+  border-color: rgba(0,0,0,0.18);
+}
 .exit-drive-btn:hover {
   background: rgba(255,255,255,0.1);
   color: var(--clr-text-primary);
@@ -1076,6 +1240,10 @@ body {
 }
 
 /* Destination HUD — top center */
+[data-theme="light"] .drive-hud {
+  background: rgba(238,242,247,0.88);
+  border-color: rgba(0,0,0,0.08);
+}
 .drive-hud {
   position: absolute;
   top: 24px;
@@ -1109,6 +1277,10 @@ body {
 }
 
 /* Distance stat — bottom right */
+[data-theme="light"] .drive-hud-stat {
+  background: rgba(238,242,247,0.88);
+  border-color: rgba(0,0,0,0.08);
+}
 .drive-hud-stat {
   position: absolute;
   bottom: 32px;
