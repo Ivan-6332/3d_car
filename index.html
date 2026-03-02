@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NavDrive — Ceylon Route</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Syne:wght@600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/styles.css" />
+
+    <!-- Three.js import map — must come before any module scripts -->
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+          "three/examples/jsm/loaders/GLTFLoader.js": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/loaders/GLTFLoader.js"
+        }
+      }
+    </script>
+  </head>
+
+  <body>
+    <div class="app-shell fade-in">
+
+      <!-- ── Ambient background layers ── -->
+      <div class="bg-base" aria-hidden="true"></div>
+      <div class="bg-glow bg-glow--left"  aria-hidden="true"></div>
+      <div class="bg-glow bg-glow--right" aria-hidden="true"></div>
+      <div class="bg-grid"                aria-hidden="true"></div>
+
+      <!-- ── Top navigation bar ── -->
+      <header class="topbar" role="banner">
+        <div class="topbar__logo">
+          <span class="logo-dot"></span>
+          NavDrive
+        </div>
+
+        <nav class="topbar__meta" aria-label="Trip meta">
+          <span class="meta-badge">
+            <span class="pulse-dot"></span>
+            Live Route
+          </span>
+          <span class="meta-item">Ceylon Edition</span>
+        </nav>
+      </header>
+
+      <!-- ── Driving mode overlay (shown only during journey) ── -->
+      <div class="drive-overlay" id="driveOverlay" aria-hidden="true">
+        <!-- Top-left: exit button -->
+        <button class="exit-drive-btn" id="exitDriveBtn" aria-label="Exit journey view">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Exit
+        </button>
+
+        <!-- Top-center: destination HUD -->
+        <div class="drive-hud">
+          <span class="drive-hud__eyebrow">En Route To</span>
+          <span class="drive-hud__dest" id="hudDest">—</span>
+        </div>
+
+        <!-- Bottom-right: distance ticker -->
+        <div class="drive-hud-stat">
+          <span class="drive-hud-stat__val" id="hudDist">—</span>
+          <span class="drive-hud-stat__lbl">Distance</span>
+        </div>
+      </div>
+
+      <!-- ── Main scene ── -->
+      <main class="scene" id="scene" role="main">
+
+        <!-- ① Map panel (in front of / left of car) -->
+        <section class="map-section" id="mapSection" aria-label="Destination map">
+          <div class="glass-card map-card">
+            <div class="map-card__header">
+              <span class="section-eyebrow">Route Map</span>
+              <span class="map-pin-icon" aria-hidden="true">⬡</span>
+            </div>
+
+            <!-- Map placeholder -->
+            <div class="map-placeholder" id="mapPlaceholder" role="img" aria-label="Sri Lanka map placeholder">
+              <!-- SVG island silhouette suggestion lines -->
+              <svg class="map-svg" viewBox="0 0 200 280" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <ellipse cx="100" cy="140" rx="62" ry="95" stroke="rgba(99,179,237,0.18)" stroke-width="1.5" stroke-dasharray="4 3"/>
+                <ellipse cx="100" cy="140" rx="45" ry="74" stroke="rgba(99,179,237,0.12)" stroke-width="1"/>
+                <!-- Stylised road lines -->
+                <path d="M100 60 Q115 105 108 140 Q102 175 110 220" stroke="rgba(129,212,250,0.35)" stroke-width="2" stroke-linecap="round"/>
+                <path d="M100 60 Q85 100 78 135 Q72 165 80 205" stroke="rgba(129,212,250,0.2)"  stroke-width="1.5" stroke-linecap="round" stroke-dasharray="5 4"/>
+                <!-- City dots -->
+                <circle cx="100" cy="60"  r="4" fill="rgba(129,212,250,0.8)"/>
+                <circle cx="108" cy="130" r="3" fill="rgba(167,243,208,0.7)"/>
+                <circle cx="110" cy="220" r="4" fill="rgba(252,211,77,0.8)"/>
+                <circle cx="78"  cy="200" r="3" fill="rgba(167,243,208,0.5)"/>
+              </svg>
+
+              <div class="map-label-group">
+                <span class="map-title">SRI LANKA</span>
+                <span class="map-sub">Select a destination →</span>
+              </div>
+            </div>
+
+            <!-- Route info strip -->
+            <div class="map-route-strip" id="mapRouteStrip">
+              <span class="route-from">Colombo</span>
+              <span class="route-line" aria-hidden="true">— — —</span>
+              <span class="route-to" id="routeTo">—</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- ② 3D Car centre stage -->
+        <section class="car-section" aria-label="3D car view">
+          <div class="car-stage">
+            <div class="car-glow" aria-hidden="true"></div>
+            <div class="car-placeholder" id="carArea" aria-label="3D car view">
+              <!-- Three.js renderer canvas is injected here by three-scene.js -->
+              <div id="car-container"></div>
+            </div>
+            <div class="car-ground-shadow" aria-hidden="true"></div>
+          </div>
+        </section>
+
+        <!-- ③ Controls panel (right of car) -->
+        <aside class="controls-section" aria-label="Journey controls">
+          <div class="glass-card controls-card">
+
+            <div class="controls-card__heading">
+              <span class="section-eyebrow">Plan Your Trip</span>
+              <h2 class="controls-title">Choose<br>Destination</h2>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="destinationSelect">Destination</label>
+              <div class="select-wrapper">
+                <select class="custom-select" id="destinationSelect" aria-label="Select destination">
+                  <option value="">Select a city…</option>
+                  <option value="kandy"      data-dist="115 km" data-dur="~3 hrs">Kandy — Hill Capital</option>
+                  <option value="galle"      data-dist="120 km" data-dur="~2.5 hrs">Galle — Fort City</option>
+                  <option value="ella"       data-dist="220 km" data-dur="~5 hrs">Ella — Mountain Town</option>
+                  <option value="trinco"     data-dist="260 km" data-dur="~6 hrs">Trincomalee — East Coast</option>
+                  <option value="jaffna"     data-dist="395 km" data-dur="~8 hrs">Jaffna — Northern City</option>
+                  <option value="sigiriya"   data-dist="172 km" data-dur="~4 hrs">Sigiriya — Rock Fortress</option>
+                </select>
+                <span class="select-arrow" aria-hidden="true">
+                  <svg width="12" height="8" viewBox="0 0 12 8"><path d="M1 1L6 7L11 1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+                </span>
+              </div>
+            </div>
+
+            <!-- Route stats -->
+            <div class="route-stats" id="routeStats" aria-live="polite">
+              <div class="stat-item">
+                <span class="stat-value" id="statDist">--</span>
+                <span class="stat-label">Distance</span>
+              </div>
+              <div class="stat-divider" aria-hidden="true"></div>
+              <div class="stat-item">
+                <span class="stat-value" id="statDur">--</span>
+                <span class="stat-label">Duration</span>
+              </div>
+            </div>
+
+            <button class="start-btn" id="startBtn" disabled aria-label="Start journey">
+              <span class="start-btn__text">Start Journey</span>
+              <span class="start-btn__icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+            </button>
+
+            <button class="details-toggle-btn" id="detailsToggleBtn" disabled aria-label="View location details" aria-expanded="false">
+              View Details
+            </button>
+
+          </div>
+        </aside>
+
+      </main>
+
+      <!-- ── Sliding details panel ── -->
+      <section
+        class="details-panel"
+        id="detailsPanel"
+        role="dialog"
+        aria-modal="false"
+        aria-label="Location details"
+        aria-hidden="true"
+      >
+        <div class="details-panel__handle" id="panelHandle" role="button" tabindex="0" aria-label="Toggle panel"></div>
+
+        <div class="details-panel__content">
+          <div class="details-panel__header">
+            <div class="details-panel__title-group">
+              <span class="section-eyebrow">Destination Spotlight</span>
+              <h3 class="details-location-name" id="locationName">Kandy</h3>
+              <span class="details-location-tag" id="locationTag">Hill Country · 115 km</span>
+            </div>
+            <button class="panel-close-btn" id="closePanel" aria-label="Close details panel">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </button>
+          </div>
+
+          <div class="details-panel__body">
+            <!-- Location image placeholder -->
+            <div class="location-img-placeholder" role="img" aria-label="Location image placeholder">
+              <span class="img-placeholder-label" id="locationImgLabel">LOCATION IMAGE</span>
+            </div>
+
+            <!-- Description -->
+            <div class="details-panel__text">
+              <p class="location-description" id="locationDesc">
+                A scenic city nestled in the heart of Sri Lanka's hill country, Kandy is home to the
+                sacred Temple of the Tooth Relic and surrounded by lush tea plantations and misty
+                mountain ranges that stretch to the horizon.
+              </p>
+
+              <div class="location-highlights" id="locationHighlights">
+                <span class="highlight-tag">Temple of the Tooth</span>
+                <span class="highlight-tag">Kandy Lake</span>
+                <span class="highlight-tag">Tea Country</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="details-panel__footer">
+            <button class="explore-btn" aria-label="Explore more about this location">
+              Explore More
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <span class="details-route-info" id="detailsRouteInfo">From Colombo · 115 km · ~3 hrs</span>
+          </div>
+        </div>
+      </section>
+
+    </div><!-- /app-shell -->
+
+    <!-- GSAP — must load before the Three.js ES module that uses it -->
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+
+    <script src="js/script.js"></script>
+    <script type="module" src="three-scene.js"></script>
+  </body>
+</html>
