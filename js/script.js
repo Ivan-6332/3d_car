@@ -182,6 +182,15 @@ startBtn.addEventListener('click', () => {
     setAttr(driveOverlay, 'aria-hidden', 'false');
     setText(hudDest, dest.name);
     setText(hudDist, dest.dist);
+
+    // Flash "Let's Go" splash text briefly
+    const splash = document.getElementById('letsGoSplash');
+    if (splash) {
+      gsap.timeline()
+        .set(splash, { opacity: 0, scale: 0.82 })
+        .to(splash, { opacity: 1, scale: 1,    duration: 0.45, ease: 'back.out(1.6)' })
+        .to(splash, { opacity: 0, scale: 1.08, duration: 0.55, ease: 'power2.in', delay: 1.0 });
+    }
   }, 480);
 
   // Disable button while driving

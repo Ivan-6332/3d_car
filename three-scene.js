@@ -19,7 +19,7 @@ const camera = new THREE.PerspectiveCamera(
   0.1,                                              // near clip
   300                                               // far clip extended for long roads
 );
-camera.position.set(0, 2.2, 8);
+camera.position.set(0, 1.0, 2.2);
 camera.lookAt(0, 0, 0);
 
 // ── Renderer ──────────────────────────────────────────────────
@@ -158,7 +158,7 @@ loader.load(
     introTimeline
       // Camera eases closer, dropping slightly for a lower, more dramatic angle
       .to(camera.position, {
-        z: 4.5, y: 1.2,
+        z: 1.1, y: 0.5,
         duration: 1.4,
         ease: 'power2.inOut',
       })
@@ -372,12 +372,12 @@ function playEngineStart() {
 
 // ── Destination location table ─────────────────────────────────────
 const locations = {
-  kandy:    { x:  0.8,  y: 0, z: -4.0 },
-  galle:    { x: -1.2,  y: 0, z: -5.5 },
-  ella:     { x:  1.8,  y: 0, z: -8.0 },
-  trinco:   { x:  3.5,  y: 0, z: -6.5 },
-  jaffna:   { x:  0.2,  y: 0, z: -12.0 },
-  sigiriya: { x: -0.5,  y: 0, z: -7.0 },
+  kandy:    { x:  1.2,  y: 0, z: -14.0 },
+  galle:    { x: -2.0,  y: 0, z: -18.0 },
+  ella:     { x:  2.8,  y: 0, z: -24.0 },
+  trinco:   { x:  4.5,  y: 0, z: -20.0 },
+  jaffna:   { x:  0.4,  y: 0, z: -32.0 },
+  sigiriya: { x: -1.0,  y: 0, z: -22.0 },
 };
 
 // ── driveToLocation ────────────────────────────────────────────────
@@ -418,8 +418,8 @@ function driveToLocation(key) {
 
   // ② Timing based on curve length
   const dist      = curve.getLength();
-  const TRACE_DUR = THREE.MathUtils.clamp(dist * 0.10, 0.9, 2.0);
-  const DRIVE_DUR = THREE.MathUtils.clamp(dist * 0.38, 4.0, 9.0);
+  const TRACE_DUR = THREE.MathUtils.clamp(dist * 0.10, 0.9, 4.0);
+  const DRIVE_DUR = THREE.MathUtils.clamp(dist * 0.38, 5.0, 18.0);
 
   // Road wider on long routes
   const roadWidth = THREE.MathUtils.clamp(dist * 0.016, 0.5, 0.9);
@@ -486,11 +486,11 @@ function driveToLocation(key) {
 
       // Camera stays close behind, low for a wide road perspective
       const behind = curve.getPoint(Math.max(p.t - 0.04, 0));
-      const camH   = 1.6 + p.t * 0.4;   // rises slightly near destination
+      const camH   = 2.2 + p.t * 0.6;   // rises slightly near destination
       camera.position.set(
         behind.x * 0.3 + pt.x * 0.7,
         camH,
-        behind.z * 0.3 + pt.z * 0.7 + 4.2
+        behind.z * 0.3 + pt.z * 0.7 + 6.5
       );
       camera.lookAt(pt.x, 0.25, pt.z);
     },
