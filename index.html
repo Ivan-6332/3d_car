@@ -221,7 +221,8 @@
 
           <div class="details-panel__body">
             <!-- Location image placeholder -->
-            <div class="location-img-placeholder" role="img" aria-label="Location image placeholder">
+            <div class="location-img-placeholder" role="img" aria-label="Location image">
+              <img class="location-img" id="locationImg" src="" alt="" loading="lazy" />
               <span class="img-placeholder-label" id="locationImgLabel">LOCATION IMAGE</span>
             </div>
 
@@ -252,6 +253,67 @@
       </section>
 
     </div><!-- /app-shell -->
+
+    <!-- ── Explore More full-screen overlay ── -->
+    <div class="explore-overlay" id="exploreOverlay" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Explore destination">
+
+      <!-- Blurred backdrop -->
+      <div class="explore-backdrop" id="exploreBackdrop"></div>
+
+      <div class="explore-modal" id="exploreModal">
+
+        <!-- Hero header strip -->
+        <div class="explore-hero" id="exploreHero">
+          <div class="explore-hero__img-wrap">
+            <img class="explore-hero__img" id="exploreHeroImg" src="" alt="" loading="lazy" />
+            <div class="explore-hero__gradient"></div>
+          </div>
+          <div class="explore-hero__content">
+            <button class="explore-back-btn" id="exploreBackBtn" aria-label="Close explore view">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Back
+            </button>
+            <div class="explore-hero__text">
+              <span class="section-eyebrow">Destination Guide</span>
+              <h2 class="explore-dest-name" id="exploreDestName">—</h2>
+              <p class="explore-dest-tagline" id="exploreDestTagline">—</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Category tab bar -->
+        <nav class="explore-tabbar" role="tablist" aria-label="Explore categories">
+          <button class="explore-tab is-active" data-tab="places"    role="tab" aria-selected="true">
+            <span class="explore-tab__icon">🗺️</span> Places
+          </button>
+          <button class="explore-tab" data-tab="dining"    role="tab" aria-selected="false">
+            <span class="explore-tab__icon">🍽️</span> Dining
+          </button>
+          <button class="explore-tab" data-tab="shopping"  role="tab" aria-selected="false">
+            <span class="explore-tab__icon">🛍️</span> Shopping
+          </button>
+          <button class="explore-tab" data-tab="hotels"    role="tab" aria-selected="false">
+            <span class="explore-tab__icon">🏨</span> Hotels
+          </button>
+          <button class="explore-tab" data-tab="parking"   role="tab" aria-selected="false">
+            <span class="explore-tab__icon">🅿️</span> Parking
+          </button>
+          <button class="explore-tab" data-tab="rentals"   role="tab" aria-selected="false">
+            <span class="explore-tab__icon">🚗</span> Rentals
+          </button>
+          <button class="explore-tab" data-tab="emergency" role="tab" aria-selected="false">
+            <span class="explore-tab__icon">🚨</span> Emergency
+          </button>
+        </nav>
+
+        <!-- Card grid -->
+        <div class="explore-body" id="exploreBody">
+          <p class="explore-loading" id="exploreLoading">Loading…</p>
+          <div class="explore-grid" id="exploreGrid"></div>
+        </div>
+
+      </div>
+    </div><!-- /explore-overlay -->
 
     <!-- GSAP — must load before the Three.js ES module that uses it -->
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
