@@ -1657,6 +1657,19 @@ body {
   margin-top: 0.65rem;
 }
 
+/* Tighten the gap on mobile — anchor text just below the car
+   instead of floating it near the screen bottom */
+@media (max-width: 768px) {
+  .lets-go-splash {
+    justify-content: flex-start;
+    padding-top: 56vh;
+    padding-bottom: 0;
+  }
+  .lets-go-splash__sub {
+    font-size: 0.72rem;
+  }
+}
+
 /* Exit button — top left */
 .exit-drive-btn {
   position: absolute;
@@ -1688,6 +1701,11 @@ body {
   background: rgba(255,255,255,0.95);
   color: var(--clr-text-primary);
   border-color: rgba(0,0,0,0.18);
+}
+
+@media (max-width: 768px) {
+  .exit-drive-btn__label { display: none; }
+  .exit-drive-btn { padding: 0.55rem 0.7rem; }
 }
 .exit-drive-btn:hover {
   background: rgba(255,255,255,0.1);

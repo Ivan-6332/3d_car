@@ -19,7 +19,14 @@ const camera = new THREE.PerspectiveCamera(
   0.1,                                              // near clip
   300                                               // far clip extended for long roads
 );
-camera.position.set(0, 1.0, 2.2);
+
+// Returns ideal home-screen camera Z — pulled back on narrow/mobile viewports
+// so the car doesn't fill the entire screen when driving mode expands to full-screen.
+function getHomeCamZ() {
+  return window.innerWidth < 768 ? 3.6 : 2.2;
+}
+
+camera.position.set(0, 1.0, getHomeCamZ());
 camera.lookAt(0, 0, 0);
 
 // ── Renderer ──────────────────────────────────────────────────
@@ -203,6 +210,10 @@ loader.load(
 );
 
 // ── Responsive resize via ResizeObserver ──────────────────────
+// Track whether a journey is currently active so we only adjust
+// the home-position camera, never the driving camera.
+let journeyActive = false;
+
 const resizeObserver = new ResizeObserver((entries) => {
   for (const entry of entries) {
     const { width, height } = entry.contentRect;
@@ -213,7 +224,12 @@ const resizeObserver = new ResizeObserver((entries) => {
 
     renderer.setSize(width, height);
     renderer.setPixelRatio(window.devicePixelRatio);
-    // No manual render call needed — setAnimationLoop handles it
+
+    // Reposition home-screen camera when not in a journey so the car
+    // doesn't look oversized on mobile full-screen driving mode.
+    if (!journeyActive) {
+      camera.position.z = getHomeCamZ();
+    }
   }
 });
 
@@ -525,13 +541,20 @@ function driveToLocation(key) {
 }
 
 // ── Listen for journey-start from UI layer ─────────────────────────
-window.addEventListener('navdrive:journey-start', e => driveToLocation(e.detail.key));
+window.addEventListener('navdrive:journey-start', e => {
+  journeyActive = true;
+  driveToLocation(e.detail.key);
+});
 
-// ── Restore home-screen car scale when driving mode exits ────────────
+// ── Restore home-screen car scale + camera when driving mode exits ───
 window.addEventListener('navdrive:journey-exit', () => {
+  journeyActive = false;
   if (!carModel) return;
   gsap.killTweensOf(carModel.scale);
   gsap.to(carModel.scale, { x: homeModelScale, y: homeModelScale, z: homeModelScale, duration: 0.6, ease: 'power2.inOut' });
+  // Restore responsive home camera position
+  gsap.to(camera.position, { z: getHomeCamZ(), y: 1.0, duration: 0.6, ease: 'power2.inOut' });
+  camera.lookAt(0, 0, 0);
 });
 
 // ── Public exports ─────────────────────────────────────────────────
