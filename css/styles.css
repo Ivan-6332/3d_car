@@ -1607,37 +1607,54 @@ body {
 }
 
 /* Let's Go splash ─────────────────────────────────────────── */
+/* Let's Go splash — repositioned below the car */
 .lets-go-splash {
   position: absolute;
   inset: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
+  justify-content: flex-end;   /* push text toward the bottom */
+  padding-bottom: 14vh;
+  gap: 0;
   pointer-events: none;
-  opacity: 0;         /* shown/hidden via GSAP */
+  opacity: 0;                  /* shown/hidden via GSAP */
 }
+
+/* Thin glowing divider line above the text group */
+.lets-go-splash::before {
+  content: '';
+  display: block;
+  width: 56px;
+  height: 2px;
+  border-radius: 100px;
+  background: linear-gradient(90deg, transparent, var(--clr-cyan), transparent);
+  box-shadow: 0 0 14px var(--clr-cyan-glow);
+  margin-bottom: 1.2rem;
+}
+
 .lets-go-splash__text {
   font-family: 'Syne', sans-serif;
-  font-size: clamp(3.5rem, 9vw, 7rem);
+  font-size: clamp(2.8rem, 7vw, 5.5rem);
   font-weight: 800;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
   color: #ffffff;
   line-height: 1;
   text-shadow:
-    0 0 40px rgba(56, 189, 248, 0.7),
-    0 0 80px rgba(56, 189, 248, 0.35),
-    0 2px 12px rgba(0, 0, 0, 0.6);
+    0 0 60px rgba(56, 189, 248, 0.55),
+    0 0 120px rgba(56, 189, 248, 0.25),
+    0 4px 24px rgba(0, 0, 0, 0.7);
 }
+
 .lets-go-splash__sub {
   font-family: 'Inter', sans-serif;
-  font-size: clamp(0.75rem, 1.5vw, 1rem);
-  font-weight: 500;
-  letter-spacing: 0.25em;
+  font-size: clamp(0.62rem, 1.2vw, 0.82rem);
+  font-weight: 600;
+  letter-spacing: 0.32em;
   text-transform: uppercase;
   color: var(--clr-cyan);
-  opacity: 0.8;
+  opacity: 0.75;
+  margin-top: 0.65rem;
 }
 
 /* Exit button — top left */
